@@ -9,6 +9,7 @@ from langchain.schema import HumanMessage, SystemMessage
 from langchain.prompts import ChatPromptTemplate
 from langchain_core.messages import BaseMessage
 from ppadb.client import Client as AdbClient
+from config import ADB_PATH
 
 
 # Load environment variables
@@ -79,6 +80,8 @@ def return_llm_image_cap_output(user_input: str, image_path: str):
 
 # Define a function to execute ADB commands synchronously
 def execute_adb(adb_command):
+    adb_command = adb_command.replace("adb", ADB_PATH, 1)
+
     result = subprocess.run(
         adb_command,
         shell=True,

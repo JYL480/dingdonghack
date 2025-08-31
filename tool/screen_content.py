@@ -15,6 +15,7 @@ from tool.click_visualizer import draw_click_marker, save_action_visualization
 
 # Define a function to execute ADB commands
 def execute_adb(adb_command):
+    adb_command = adb_command.replace("adb", config.ADB_PATH, 1)
     result = subprocess.run(
         adb_command,
         shell=True,

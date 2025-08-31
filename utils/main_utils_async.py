@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from config import ADB_PATH
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain.prompts import ChatPromptTemplate
@@ -77,6 +78,7 @@ async def return_llm_image_cap_output(user_input: str, image_path: str):
 
 # Define a function to execute ADB commands
 def execute_adb(adb_command):
+    adb_command = adb_command.replace("adb", ADB_PATH, 1)
     result = subprocess.run(
         adb_command,
         shell=True,

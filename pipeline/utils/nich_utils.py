@@ -25,6 +25,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.tools import tool
 import sys
 from dotenv import load_dotenv
+from config import ADB_PATH
 
 # Load environment variables first
 load_dotenv()
@@ -80,77 +81,9 @@ def get_model():
 # ADB Command Execution
 # =====================================================
 
-def find_adb_path():
-    """Find ADB path dynamically"""
-    import shutil
-    import platform
-    
-    # First check if adb is in PATH
-    adb_in_path = shutil.which("adb")
-    if adb_in_path:
-        return adb_in_path
-    
-    # Common ADB locations based on OS
-    possible_paths = []
-    
-    if platform.system() == "Windows":
-        # Windows common paths
-        user_home = os.path.expanduser("~")
-        possible_paths = [
-            r"C:\platform-tools\adb.exe",
-            r"C:\Android\platform-tools\adb.exe",
-            r"C:\Android\Sdk\platform-tools\adb.exe",
-            os.path.join(user_home, r"AppData\Local\Android\Sdk\platform-tools\adb.exe"),
-            os.path.join(user_home, r"AppData\Local\Android\platform-tools\adb.exe"),
-            r"C:\Program Files (x86)\Android\android-sdk\platform-tools\adb.exe",
-            r"C:\Program Files\Android\android-sdk\platform-tools\adb.exe",
-        ]
-    elif platform.system() == "Darwin":  # macOS
-        user_home = os.path.expanduser("~")
-        possible_paths = [
-            "/usr/local/bin/adb",
-            os.path.join(user_home, "Library/Android/sdk/platform-tools/adb"),
-            "/opt/homebrew/bin/adb",
-            "/Applications/Android Studio.app/Contents/platform-tools/adb",
-        ]
-    else:  # Linux
-        user_home = os.path.expanduser("~")
-        possible_paths = [
-            "/usr/bin/adb",
-            "/usr/local/bin/adb",
-            os.path.join(user_home, "Android/Sdk/platform-tools/adb"),
-            "/opt/android-sdk/platform-tools/adb",
-        ]
-    
-    # Check each possible path
-    for path in possible_paths:
-        if os.path.exists(path):
-            print(f"[INFO] Found ADB at: {path}")
-            return path
-    
-    # If not found, show helpful message
-    print("[WARNING] ADB not found. Please ensure Android SDK is installed.")
-    print("[WARNING] Add platform-tools to PATH or set ADB_PATH environment variable")
-    
-    # Check for environment variable as fallback
-    env_path = os.environ.get("ADB_PATH")
-    if env_path and os.path.exists(env_path):
-        return env_path
-    
-    # Return None to use 'adb' command as-is (might work if in PATH)
-    return None
-
 def execute_adb(adb_command):
     """Execute ADB commands with proper path quoting."""
-    # Add full path to adb if not already present
-    if adb_command.startswith("adb"):
-        adb_path = find_adb_path()
-        if adb_path:
-            # IMPORTANT: Quote the path to handle spaces
-            quoted_path = f'"{adb_path}"'
-            adb_command = adb_command.replace("adb", quoted_path, 1)
-
-    print(f"[ADB] Executing: {adb_command}") # Added for better debugging
+    adb_command = adb_command.replace("adb", ADB_PATH, 1)
     
     result = subprocess.run(
         adb_command,
