@@ -1,0 +1,14 @@
+/screenshots/
+.idea/
+**/__pycache__
+/log/
+config.py
+venv/
+env/
+ENV/
+.venv/
+.env
+/pipeline/log/
+/pipline/__pycache__
+*.ipynb
+/pipeline/utils/log/
